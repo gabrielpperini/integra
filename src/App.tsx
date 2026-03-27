@@ -3,64 +3,68 @@ import { useState } from "react";
 const TABLE_15: Record<number, number> = {1:20,2:17,3:15,4:14,5:12,6:11,7:10,8:9,9:7,10:6,11:5,12:4,13:3,14:2,15:1};
 
 const dinheiro = [
-  {curso:"AMBICA",   ratio:1.734, alunos:346,  valor:600},
-  {curso:"QUÍMICA",  ratio:0.963, alunos:623,  valor:600},
-  {curso:"AUTOMAÇÃO",ratio:0.403, alunos:211,  valor:85},
-  {curso:"PRODUÇÃO", ratio:0.007, alunos:424,  valor:3},
-  {curso:"ALERGIA",  ratio:0,     alunos:318,  valor:0},
-  {curso:"A3FAD",    ratio:0,     alunos:1207, valor:0},
-  {curso:"CIVIL",    ratio:0,     alunos:877,  valor:0},
-  {curso:"AAPI",     ratio:0,     alunos:2553, valor:0},
-  {curso:"MATERIAIS",ratio:0,     alunos:134,  valor:0},
-  {curso:"ELÉTRICA", ratio:0,     alunos:408,  valor:0},
-  {curso:"HÍDRICA",  ratio:0,     alunos:61,   valor:0},
-  {curso:"MINAS",    ratio:0,     alunos:85,   valor:0},
-  {curso:"MECÂNICA", ratio:0,     alunos:655,  valor:0},
-  {curso:"METAL",    ratio:0,     alunos:151,  valor:0},
-  {curso:"AACA",     ratio:0,     alunos:999,  valor:0},
-];
+  {curso:"AMBICA",   alunos:346,  valor:600},
+  {curso:"QUÍMICA",  alunos:623,  valor:600},
+  {curso:"AUTOMAÇÃO",alunos:211,  valor:85},
+  {curso:"PRODUÇÃO", alunos:424,  valor:3},
+  {curso:"ALERGIA",  alunos:318,  valor:0},
+  {curso:"A3FAD",    alunos:1207, valor:0},
+  {curso:"CIVIL",    alunos:877,  valor:0},
+  {curso:"AAPI",     alunos:2553, valor:0},
+  {curso:"MATERIAIS",alunos:134,  valor:0},
+  {curso:"ELÉTRICA", alunos:408,  valor:0},
+  {curso:"HÍDRICA",  alunos:61,   valor:0},
+  {curso:"MINAS",    alunos:85,   valor:0},
+  {curso:"MECÂNICA", alunos:655,  valor:0},
+  {curso:"METAL",    alunos:151,  valor:0},
+  {curso:"AACA",     alunos:999,  valor:0},
+].map(x=>({...x, ratio: x.valor/x.alunos})).sort((a,b)=>b.ratio-a.ratio);
 
 const fisica = [
-  {curso:"PRODUÇÃO", ratio:2.34,alunos:424, pontos:993, itens:19,
+  {curso:"PRODUÇÃO", alunos:424,
     doacoes:[{item:"Ração 20+ kg",qtd:18,pts:990},{item:"Ração 1 kg",qtd:1,pts:3}]},
-  {curso:"AMBICA",   ratio:0.50,alunos:346, pontos:173, itens:65,
+  {curso:"AMBICA",   alunos:346,
     doacoes:[{item:"Ração 20+ kg",qtd:2,pts:110},{item:"Sachê ração",qtd:63,pts:63}]},
-  {curso:"QUÍMICA",  ratio:0.23,alunos:623, pontos:141, itens:92,
+  {curso:"QUÍMICA",  alunos:623,
     doacoes:[{item:"Sachê ração",qtd:90,pts:90},{item:"Ração 15 kg",qtd:1,pts:28},{item:"Ração 10 kg",qtd:1,pts:23}]},
-  {curso:"ALERGIA",  ratio:0.18,alunos:318, pontos:58,  itens:2,
+  {curso:"ALERGIA",  alunos:318,
     doacoes:[{item:"Ração 20+ kg",qtd:1,pts:55},{item:"Ração 1 kg",qtd:1,pts:3}]},
-  {curso:"AUTOMAÇÃO",ratio:0.16,alunos:211, pontos:34,  itens:34,
+  {curso:"AUTOMAÇÃO",alunos:211,
     doacoes:[{item:"Sachê ração",qtd:34,pts:34}]},
-  {curso:"A3FAD",    ratio:0.06,alunos:1207,pontos:75,  itens:75,
+  {curso:"A3FAD",    alunos:1207,
     doacoes:[{item:"Sachê ração",qtd:75,pts:75}]},
-  {curso:"CIVIL",    ratio:0,alunos:877, pontos:0,itens:0,doacoes:[]},
-  {curso:"AAPI",     ratio:0,alunos:2553,pontos:0,itens:0,doacoes:[]},
-  {curso:"MATERIAIS",ratio:0,alunos:134, pontos:0,itens:0,doacoes:[]},
-  {curso:"ELÉTRICA", ratio:0,alunos:408, pontos:0,itens:0,doacoes:[]},
-  {curso:"HÍDRICA",  ratio:0,alunos:61,  pontos:0,itens:0,doacoes:[]},
-  {curso:"MINAS",    ratio:0,alunos:85,  pontos:0,itens:0,doacoes:[]},
-  {curso:"MECÂNICA", ratio:0,alunos:655, pontos:0,itens:0,doacoes:[]},
-  {curso:"METAL",    ratio:0,alunos:151, pontos:0,itens:0,doacoes:[]},
-  {curso:"AACA",     ratio:0,alunos:999, pontos:0,itens:0,doacoes:[]},
-];
+  {curso:"CIVIL",    alunos:877, doacoes:[]},
+  {curso:"AAPI",     alunos:2553,doacoes:[]},
+  {curso:"MATERIAIS",alunos:134, doacoes:[]},
+  {curso:"ELÉTRICA", alunos:408, doacoes:[]},
+  {curso:"HÍDRICA",  alunos:61,  doacoes:[]},
+  {curso:"MINAS",    alunos:85,  doacoes:[]},
+  {curso:"MECÂNICA", alunos:655, doacoes:[]},
+  {curso:"METAL",    alunos:151, doacoes:[]},
+  {curso:"AACA",     alunos:999, doacoes:[]},
+].map(x=>{
+  const itens = x.doacoes.reduce((s,d)=>s+d.qtd,0);
+  const pontos = x.doacoes.reduce((s,d)=>s+d.pts,0);
+  return {...x, itens, pontos, ratio: pontos/x.alunos};
+}).sort((a,b)=>b.ratio-a.ratio);
 
 const sangue = [
-  {curso:"PRODUÇÃO", ratio:15.33,doacoes:65,alunos:424},
-  {curso:"AUTOMAÇÃO",ratio:2.37, doacoes:5, alunos:211},
-  {curso:"AMBICA",   ratio:1.73, doacoes:6, alunos:346},
-  {curso:"QUÍMICA",  ratio:1.28, doacoes:8, alunos:623},
-  {curso:"A3FAD",    ratio:0.75, doacoes:9, alunos:1207},
-  {curso:"CIVIL",    ratio:0.68, doacoes:6, alunos:877},
-  {curso:"ALERGIA",  ratio:0.63, doacoes:2, alunos:318},
-  {curso:"AAPI",     ratio:0,doacoes:0,alunos:2553},
-  {curso:"MATERIAIS",ratio:0,doacoes:0,alunos:134},
-  {curso:"ELÉTRICA", ratio:0,doacoes:0,alunos:408},
-  {curso:"HÍDRICA",  ratio:0,doacoes:0,alunos:61},
-  {curso:"MINAS",    ratio:0,doacoes:0,alunos:85},
-  {curso:"MECÂNICA", ratio:0,doacoes:0,alunos:655},
-  {curso:"METAL",    ratio:0,doacoes:0,alunos:151},
-  {curso:"AACA",     ratio:0,doacoes:0,alunos:999},
-];
+  {curso:"PRODUÇÃO", doacoes:65,alunos:424},
+  {curso:"AUTOMAÇÃO",doacoes:5, alunos:211},
+  {curso:"AMBICA",   doacoes:6, alunos:346},
+  {curso:"QUÍMICA",  doacoes:8, alunos:623},
+  {curso:"A3FAD",    doacoes:9, alunos:1207},
+  {curso:"CIVIL",    doacoes:6, alunos:877},
+  {curso:"ALERGIA",  doacoes:2, alunos:318},
+  {curso:"AAPI",     doacoes:0,alunos:2553},
+  {curso:"MATERIAIS",doacoes:0,alunos:134},
+  {curso:"ELÉTRICA", doacoes:0,alunos:408},
+  {curso:"HÍDRICA",  doacoes:0,alunos:61},
+  {curso:"MINAS",    doacoes:0,alunos:85},
+  {curso:"MECÂNICA", doacoes:0,alunos:655},
+  {curso:"METAL",    doacoes:0,alunos:151},
+  {curso:"AACA",     doacoes:0,alunos:999},
+].map(x=>({...x, ratio: x.doacoes/x.alunos})).sort((a,b)=>b.ratio-a.ratio);
 
 const itemSummary = (() => {
   const map: Record<string, {qtd:number,pts:number,cursos:{curso:string,qtd:number,pts:number}[]}> = {};
@@ -76,25 +80,12 @@ const itemSummary = (() => {
 const totalItens = fisica.reduce((s,c)=>s+c.itens,0);
 const totalPts   = fisica.reduce((s,c)=>s+c.pontos,0);
 
-function assignPoints(list) {
-  const ranked = list.filter(x => x.ratio > 0);
-  const zeroed = list.filter(x => x.ratio === 0);
-  return [
-    ...ranked.map((item,i)=>({...item,pos:i+1,pts:TABLE_15[i+1]||1})),
-    ...zeroed.map(item=>({...item,pos:0,pts:0})),
-  ];
-}
-
-const d = assignPoints(dinheiro);
-const f = assignPoints(fisica);
-const s = assignPoints(sangue);
-
-const allCursos = [...new Set([...d,...f,...s].map(x=>x.curso))];
-function getPts(list,curso){ return list.find(x=>x.curso===curso)?.pts ?? 0; }
+const allCursos = [...new Set([...dinheiro,...fisica,...sangue].map(x=>x.curso))];
+function getRatio(list,curso){ return list.find(x=>x.curso===curso)?.ratio ?? 0; }
 const ranking = allCursos.map(curso=>{
-  const pd=getPts(d,curso), pf=getPts(f,curso), ps=getPts(s,curso);
-  return {curso,pd,pf,ps,total:pd*1+pf*2+ps*3};
-}).sort((a,b)=> b.total!==a.total ? b.total-a.total : (b.ps*3)-(a.ps*3));
+  const rd=getRatio(dinheiro,curso), rf=getRatio(fisica,curso), rs=getRatio(sangue,curso);
+  return {curso,rd,rf,rs,total: rd*1 + rf*2 + rs*3};
+}).sort((a,b)=> b.total!==a.total ? b.total-a.total : (b.rs*3)-(a.rs*3));
 
 const finalWithPts = ranking.map((row,i)=>({...row, ptsGerais: row.total===0 ? 0 : (TABLE_15[i+1]||1) }));
 
@@ -125,14 +116,13 @@ function SimpleTable({data,title,subtitle,colorClass}: {data: any[],title: strin
               <th className={`${cc} text-gray-500`}>Alunos</th>
               <th className={`${cc} text-gray-500`}>Arrecadado</th>
               <th className={cc}>R$/aluno</th>
-              <th className={cc}>Pts tabela</th>
             </tr>
           </thead>
           <tbody>
             {data.map((row,i)=>(
-              <tr key={row.curso} className={`border-b border-gray-100 ${podiumBg(i)}`}>
-                <td className={cc}>{medal[i]||`${i+1}º`}</td>
-                <td className={`${cl} ${i<3?"font-bold":""}`}>{row.curso}</td>
+              <tr key={row.curso} className={`border-b border-gray-100 ${podiumBg(i, row.ratio===0)}`}>
+                <td className={`${cc} ${row.ratio===0?"text-gray-300":""}`}>{row.ratio===0?"—":medal[i]||`${i+1}º`}</td>
+                <td className={`${cl} ${row.ratio===0?"text-gray-300":i<3?"font-bold":""}`}>{row.curso}</td>
                 <td className={`${cc} text-gray-500`}>{row.alunos}</td>
                 <td className={`${cc} ${row.valor===0?"text-gray-300":"text-gray-700"}`}>
                   {row.valor===0?"—":`R$ ${row.valor.toFixed(2)}`}
@@ -140,7 +130,6 @@ function SimpleTable({data,title,subtitle,colorClass}: {data: any[],title: strin
                 <td className={`${cc} ${row.ratio===0?"text-gray-300":"text-gray-800"}`}>
                   {row.ratio===0?"—":row.ratio.toFixed(3)}
                 </td>
-                <td className={`${cc} font-bold ${row.pts===0?"text-gray-300":colorClass}`}>{row.pts||"—"}</td>
               </tr>
             ))}
           </tbody>
@@ -155,7 +144,7 @@ function FisicaTable(){
   const toggle = (curso) => setExpanded(prev => prev===curso ? null : curso);
 
   const rows = [];
-  f.forEach((row,i) => {
+  fisica.forEach((row,i) => {
     const isExp = expanded === row.curso;
     rows.push(
       <tr key={row.curso}
@@ -171,13 +160,12 @@ function FisicaTable(){
         <td className={`${cc} ${row.itens===0?"text-gray-300":"text-gray-700"}`}>{row.itens||"—"}</td>
         <td className={`${cc} ${row.pontos===0?"text-gray-300":"text-gray-700"}`}>{row.pontos||"—"}</td>
         <td className={`${cc} ${row.ratio===0?"text-gray-300":"text-gray-800"}`}>{row.ratio===0?"—":row.ratio.toFixed(3)}</td>
-        <td className={`${cc} font-bold ${row.pts===0?"text-gray-300":"text-emerald-500"}`}>{row.pts||"—"}</td>
       </tr>
     );
     if (isExp && row.doacoes.length>0) {
       rows.push(
         <tr key={row.curso+"_det"}>
-          <td colSpan={7} className="px-2 pb-3 pl-10 border-b border-gray-100 bg-gray-50">
+          <td colSpan={6} className="px-2 pb-3 pl-10 border-b border-gray-100 bg-gray-50">
             <table className="w-full text-xs border-collapse">
               <thead>
                 <tr className="text-gray-500">
@@ -220,7 +208,6 @@ function FisicaTable(){
               <th className={`${cc} text-gray-500`}>Itens</th>
               <th className={`${cc} text-gray-500`}>Pts itens</th>
               <th className={cc}>Pts/aluno</th>
-              <th className={`${cc} text-emerald-500`}>Pts tabela</th>
             </tr>
           </thead>
           <tbody>{rows}</tbody>
@@ -272,10 +259,10 @@ export default function App(){
                   <tr key={row.curso} className={`border-b border-gray-100 ${podiumBg(i, row.total===0)}`}>
                     <td className={`${cc} text-base ${row.total===0?"text-gray-300":""}`}>{row.total===0?"—":medal[i]||`${i+1}º`}</td>
                     <td className={`${cl} ${row.total===0?"text-gray-300":i<3?"font-bold":""}`}>{row.curso}</td>
-                    <td className={`${cc} ${row.pd===0?"text-gray-300":"text-amber-800"}`}>{row.pd||"—"}</td>
-                    <td className={`${cc} ${row.pf===0?"text-gray-300":"text-emerald-800"}`}>{row.pf===0?"—":row.pf*2}</td>
-                    <td className={`${cc} ${row.ps===0?"text-gray-300":"text-red-800"}`}>{row.ps===0?"—":row.ps*3}</td>
-                    <td className={`${cc} font-bold text-[15px] ${row.total===0?"text-gray-300":""}`}>{row.total||"—"}</td>
+                    <td className={`${cc} ${row.rd===0?"text-gray-300":"text-amber-800"}`}>{row.rd===0?"—":(row.rd*1).toFixed(3)}</td>
+                    <td className={`${cc} ${row.rf===0?"text-gray-300":"text-emerald-800"}`}>{row.rf===0?"—":(row.rf*2).toFixed(3)}</td>
+                    <td className={`${cc} ${row.rs===0?"text-gray-300":"text-red-800"}`}>{row.rs===0?"—":(row.rs*3).toFixed(3)}</td>
+                    <td className={`${cc} font-bold text-[15px] ${row.total===0?"text-gray-300":""}`}>{row.total===0?"—":row.total.toFixed(3)}</td>
                     <td className={`${cc} font-bold ${row.ptsGerais===0?"text-gray-300":"text-indigo-600"}`}>{row.ptsGerais||"—"}</td>
                   </tr>
                 ))}
@@ -285,7 +272,7 @@ export default function App(){
         </div>
       )}
 
-      {tab===1&&<SimpleTable data={d} title="Arrecadação de Dinheiro" subtitle="Métrica: R$ arrecadados ÷ nº de alunos · Peso 1" colorClass="text-amber-500"/>}
+      {tab===1&&<SimpleTable data={dinheiro} title="Arrecadação de Dinheiro" subtitle="Métrica: R$ arrecadados ÷ nº de alunos · Peso 1" colorClass="text-amber-500"/>}
       {tab===2&&<FisicaTable/>}
 
       {tab===3&&(
@@ -306,18 +293,16 @@ export default function App(){
                   <th className={`${cc} text-gray-500`}>Alunos</th>
                   <th className={`${cc} text-gray-500`}>Doações</th>
                   <th className={cc}>Ratio</th>
-                  <th className={`${cc} text-red-500`}>Pts tabela</th>
                 </tr>
               </thead>
               <tbody>
-                {s.map((row,i)=>(
+                {sangue.map((row,i)=>(
                   <tr key={row.curso} className={`border-b border-gray-100 ${podiumBg(i)}`}>
                     <td className={cc}>{medal[i]||`${i+1}º`}</td>
                     <td className={`${cl} ${i<3?"font-bold":""}`}>{row.curso}</td>
                     <td className={`${cc} text-gray-500`}>{row.alunos}</td>
                     <td className={`${cc} ${row.doacoes===0?"text-gray-300":"text-gray-700"}`}>{row.doacoes||"—"}</td>
                     <td className={`${cc} ${row.ratio===0?"text-gray-300":"text-gray-800"}`}>{row.ratio===0?"—":row.ratio.toFixed(3)}</td>
-                    <td className={`${cc} font-bold ${row.pts===0?"text-gray-300":"text-red-500"}`}>{row.pts||"—"}</td>
                   </tr>
                 ))}
               </tbody>
