@@ -77,7 +77,12 @@ const totalItens = fisica.reduce((s,c)=>s+c.itens,0);
 const totalPts   = fisica.reduce((s,c)=>s+c.pontos,0);
 
 function assignPoints(list) {
-  return list.map((item,i)=>({...item,pos:i+1,pts:TABLE_15[i+1]||1}));
+  const ranked = list.filter(x => x.ratio > 0);
+  const zeroed = list.filter(x => x.ratio === 0);
+  return [
+    ...ranked.map((item,i)=>({...item,pos:i+1,pts:TABLE_15[i+1]||1})),
+    ...zeroed.map(item=>({...item,pos:0,pts:0})),
+  ];
 }
 
 const d = assignPoints(dinheiro);
@@ -85,11 +90,13 @@ const f = assignPoints(fisica);
 const s = assignPoints(sangue);
 
 const allCursos = [...new Set([...d,...f,...s].map(x=>x.curso))];
-function getPts(list,curso){ return list.find(x=>x.curso===curso)?.pts||1; }
-const final = allCursos.map(curso=>{
+function getPts(list,curso){ return list.find(x=>x.curso===curso)?.pts ?? 0; }
+const ranking = allCursos.map(curso=>{
   const pd=getPts(d,curso), pf=getPts(f,curso), ps=getPts(s,curso);
   return {curso,pd,pf,ps,total:pd*1+pf*2+ps*3};
 }).sort((a,b)=> b.total!==a.total ? b.total-a.total : (b.ps*3)-(a.ps*3));
+
+const finalWithPts = ranking.map((row,i)=>({...row, ptsGerais: row.total===0 ? 0 : (TABLE_15[i+1]||1) }));
 
 const medal = ["🥇","🥈","🥉"];
 const tabs  = ["🏆 Final","💰 Dinheiro","📦 Física","🩸 Sangue","📊 Resumo Itens"];
@@ -124,7 +131,7 @@ function SimpleTable({data,title,subtitle,color}: {data: any[],title: string,sub
               <td style={{padding:"10px 8px",textAlign:"center",color:row.ratio===0?"#ccc":"#333"}}>
                 {row.ratio===0?"—":row.ratio.toFixed(3)}
               </td>
-              <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color}}>{row.pts}</td>
+              <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:row.pts===0?"#ccc":color}}>{row.pts||"—"}</td>
             </tr>
           ))}
         </tbody>
@@ -155,7 +162,7 @@ function FisicaTable(){
         <td style={{padding:"10px 8px",textAlign:"center",color:row.itens===0?"#ccc":"#374151"}}>{row.itens||"—"}</td>
         <td style={{padding:"10px 8px",textAlign:"center",color:row.pontos===0?"#ccc":"#374151"}}>{row.pontos||"—"}</td>
         <td style={{padding:"10px 8px",textAlign:"center",color:row.ratio===0?"#ccc":"#333"}}>{row.ratio===0?"—":row.ratio.toFixed(3)}</td>
-        <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:"#10b981"}}>{row.pts}</td>
+        <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:row.pts===0?"#ccc":"#10b981"}}>{row.pts||"—"}</td>
       </tr>
     );
     if (isExp && row.doacoes.length>0) {
@@ -247,17 +254,19 @@ export default function App(){
                 <th style={{padding:"10px 8px",textAlign:"center",color:"#10b981"}}>📦×2</th>
                 <th style={{padding:"10px 8px",textAlign:"center",color:"#ef4444"}}>🩸×3</th>
                 <th style={{padding:"10px 8px",textAlign:"center",fontWeight:700}}>TOTAL</th>
+                <th style={{padding:"10px 8px",textAlign:"center",color:"#4f46e5"}}>Pts Gerais</th>
               </tr>
             </thead>
             <tbody>
-              {final.map((row,i)=>(
-                <tr key={row.curso} style={{borderBottom:"1px solid #eee",background:i<3?["#fffdf0","#f0f4ff","#f5f5f5"][i]:"white"}}>
-                  <td style={{padding:"10px 8px",textAlign:"center",fontSize:16}}>{medal[i]||`${i+1}º`}</td>
-                  <td style={{padding:"10px 8px",fontWeight:i<3?700:400}}>{row.curso}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",color:"#92400e"}}>{row.pd}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",color:"#065f46"}}>{row.pf*2}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",color:"#991b1b"}}>{row.ps*3}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,fontSize:15}}>{row.total}</td>
+              {finalWithPts.map((row,i)=>(
+                <tr key={row.curso} style={{borderBottom:"1px solid #eee",background:row.total===0?"white":i<3?["#fffdf0","#f0f4ff","#f5f5f5"][i]:"white"}}>
+                  <td style={{padding:"10px 8px",textAlign:"center",fontSize:16,color:row.total===0?"#ccc":undefined}}>{row.total===0?"—":medal[i]||`${i+1}º`}</td>
+                  <td style={{padding:"10px 8px",fontWeight:row.total===0?400:i<3?700:400,color:row.total===0?"#ccc":undefined}}>{row.curso}</td>
+                  <td style={{padding:"10px 8px",textAlign:"center",color:row.pd===0?"#ccc":"#92400e"}}>{row.pd||"—"}</td>
+                  <td style={{padding:"10px 8px",textAlign:"center",color:row.pf===0?"#ccc":"#065f46"}}>{row.pf===0?"—":row.pf*2}</td>
+                  <td style={{padding:"10px 8px",textAlign:"center",color:row.ps===0?"#ccc":"#991b1b"}}>{row.ps===0?"—":row.ps*3}</td>
+                  <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,fontSize:15,color:row.total===0?"#ccc":undefined}}>{row.total||"—"}</td>
+                  <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:row.ptsGerais===0?"#ccc":"#4f46e5"}}>{row.ptsGerais||"—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -296,7 +305,7 @@ export default function App(){
                   <td style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>{row.alunos}</td>
                   <td style={{padding:"10px 8px",textAlign:"center",color:row.doacoes===0?"#ccc":"#374151"}}>{row.doacoes||"—"}</td>
                   <td style={{padding:"10px 8px",textAlign:"center",color:row.ratio===0?"#ccc":"#333"}}>{row.ratio===0?"—":row.ratio.toFixed(3)}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:"#ef4444"}}>{row.pts}</td>
+                  <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:row.pts===0?"#ccc":"#ef4444"}}>{row.pts||"—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -334,7 +343,7 @@ export default function App(){
                 <tr key={i} style={{borderBottom:"1px solid #eee"}}>
                   <td style={{padding:"10px 8px",fontWeight:600}}>{row.item}</td>
                   <td style={{padding:"10px 8px",textAlign:"center"}}>{row.qtd}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:"#10b981"}}>{row.pts}</td>
+                  <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:row.pts===0?"#ccc":"#10b981"}}>{row.pts||"—"}</td>
                   <td style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>{(row.pts/row.qtd).toFixed(1)}</td>
                   <td style={{padding:"10px 8px",fontSize:12,color:"#6b7280"}}>
                     {row.cursos.map(c=>`${c.curso} (${c.qtd})`).join(" · ")}
