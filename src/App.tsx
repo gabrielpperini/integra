@@ -45,7 +45,7 @@ const fisica = [
 ];
 
 const sangue = [
-  {curso:"PRODUÇÃO", ratio:15.57,doacoes:66,alunos:424},
+  {curso:"PRODUÇÃO", ratio:15.33,doacoes:65,alunos:424},
   {curso:"AUTOMAÇÃO",ratio:2.37, doacoes:5, alunos:211},
   {curso:"AMBICA",   ratio:1.73, doacoes:6, alunos:346},
   {curso:"QUÍMICA",  ratio:1.28, doacoes:8, alunos:623},
