@@ -117,7 +117,7 @@ function SimpleTable({data,title,subtitle,colorClass}: {data: any[],title: strin
         <div className="text-xs sm:text-[13px] text-gray-500 mt-0.5">{subtitle}</div>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-xs sm:text-sm">
+        <table className="w-full min-w-[500px] border-collapse text-xs sm:text-sm">
           <thead>
             <tr className="bg-gray-50">
               <th className={`${cc} w-9`}>#</th>
@@ -211,7 +211,7 @@ function FisicaTable(){
         <div className="text-xs sm:text-[13px] text-gray-500 mt-0.5">Métrica: pontos de itens ÷ nº de alunos · Peso 2 · clique para ver detalhes</div>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-xs sm:text-[13px]">
+        <table className="w-full min-w-[560px] border-collapse text-xs sm:text-[13px]">
           <thead>
             <tr className="bg-gray-50">
               <th className={`${cc} w-9`}>#</th>
@@ -255,7 +255,7 @@ export default function App(){
             <strong>Metodologia:</strong> Pontos pela tabela Art. 37 (15 equipes). Pesos: Dinheiro ×1 · Física ×2 · Sangue ×3. Empate desempata por Sangue.
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-xs sm:text-sm">
+            <table className="w-full min-w-[560px] border-collapse text-xs sm:text-sm">
               <thead>
                 <tr className="bg-gray-50">
                   <th className={`${cc} w-9`}>#</th>
@@ -298,7 +298,7 @@ export default function App(){
             </div>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-xs sm:text-[13px]">
+            <table className="w-full min-w-[500px] border-collapse text-xs sm:text-[13px]">
               <thead>
                 <tr className="bg-gray-50">
                   <th className={`${cc} w-9`}>#</th>
@@ -342,7 +342,7 @@ export default function App(){
           </div>
           <h3 className="text-sm sm:text-[15px] mb-2 text-gray-700">Por tipo de item</h3>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-xs sm:text-[13px]">
+            <table className="w-full min-w-[480px] border-collapse text-xs sm:text-[13px]">
               <thead>
                 <tr className="bg-gray-50">
                   <th className={cl}>Item</th>
