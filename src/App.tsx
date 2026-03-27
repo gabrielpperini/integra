@@ -1,223 +1,13 @@
 import { useState } from "react";
+import FinalTable from "./components/FinalTable";
+import DinheiroTable from "./components/DinheiroTable";
+import FisicaTable from "./components/FisicaTable";
+import SangueTable from "./components/SangueTable";
+import ResumoItens from "./components/ResumoItens";
 
-const TABLE_15: Record<number, number> = {1:20,2:17,3:15,4:14,5:12,6:11,7:10,8:9,9:7,10:6,11:5,12:4,13:3,14:2,15:1};
+const tabs = ["🏆 Final", "💰 Dinheiro", "📦 Física", "🩸 Sangue", "📊 Resumo Itens"];
 
-const dinheiro = [
-  {curso:"AMBICA",   alunos:346,  valor:600},
-  {curso:"QUÍMICA",  alunos:623,  valor:600},
-  {curso:"AUTOMAÇÃO",alunos:211,  valor:85},
-  {curso:"PRODUÇÃO", alunos:424,  valor:3},
-  {curso:"ALERGIA",  alunos:318,  valor:0},
-  {curso:"A3FAD",    alunos:1207, valor:0},
-  {curso:"CIVIL",    alunos:877,  valor:0},
-  {curso:"AAPI",     alunos:2553, valor:0},
-  {curso:"MATERIAIS",alunos:134,  valor:0},
-  {curso:"ELÉTRICA", alunos:408,  valor:0},
-  {curso:"HÍDRICA",  alunos:61,   valor:0},
-  {curso:"MINAS",    alunos:85,   valor:0},
-  {curso:"MECÂNICA", alunos:655,  valor:0},
-  {curso:"METAL",    alunos:151,  valor:0},
-  {curso:"AACA",     alunos:999,  valor:0},
-].map(x=>({...x, ratio: x.valor/x.alunos})).sort((a,b)=>b.ratio-a.ratio);
-
-const fisica = [
-  {curso:"PRODUÇÃO", alunos:424,
-    doacoes:[{item:"Ração 20+ kg",qtd:18,pts:990},{item:"Ração 1 kg",qtd:1,pts:3}]},
-  {curso:"AMBICA",   alunos:346,
-    doacoes:[{item:"Ração 20+ kg",qtd:2,pts:110},{item:"Sachê ração",qtd:63,pts:63}]},
-  {curso:"QUÍMICA",  alunos:623,
-    doacoes:[{item:"Sachê ração",qtd:90,pts:90},{item:"Ração 15 kg",qtd:1,pts:28},{item:"Ração 10 kg",qtd:1,pts:23}]},
-  {curso:"ALERGIA",  alunos:318,
-    doacoes:[{item:"Ração 20+ kg",qtd:1,pts:55},{item:"Ração 1 kg",qtd:1,pts:3}]},
-  {curso:"AUTOMAÇÃO",alunos:211,
-    doacoes:[{item:"Sachê ração",qtd:34,pts:34}]},
-  {curso:"A3FAD",    alunos:1207,
-    doacoes:[{item:"Sachê ração",qtd:75,pts:75}]},
-  {curso:"CIVIL",    alunos:877, doacoes:[]},
-  {curso:"AAPI",     alunos:2553,doacoes:[]},
-  {curso:"MATERIAIS",alunos:134, doacoes:[]},
-  {curso:"ELÉTRICA", alunos:408, doacoes:[]},
-  {curso:"HÍDRICA",  alunos:61,  doacoes:[]},
-  {curso:"MINAS",    alunos:85,  doacoes:[]},
-  {curso:"MECÂNICA", alunos:655, doacoes:[]},
-  {curso:"METAL",    alunos:151, doacoes:[]},
-  {curso:"AACA",     alunos:999, doacoes:[]},
-].map(x=>{
-  const itens = x.doacoes.reduce((s,d)=>s+d.qtd,0);
-  const pontos = x.doacoes.reduce((s,d)=>s+d.pts,0);
-  return {...x, itens, pontos, ratio: pontos/x.alunos};
-}).sort((a,b)=>b.ratio-a.ratio);
-
-const sangue = [
-  {curso:"PRODUÇÃO", doacoes:65,alunos:424},
-  {curso:"AUTOMAÇÃO",doacoes:5, alunos:211},
-  {curso:"AMBICA",   doacoes:6, alunos:346},
-  {curso:"QUÍMICA",  doacoes:8, alunos:623},
-  {curso:"A3FAD",    doacoes:9, alunos:1207},
-  {curso:"CIVIL",    doacoes:6, alunos:877},
-  {curso:"ALERGIA",  doacoes:2, alunos:318},
-  {curso:"AAPI",     doacoes:0,alunos:2553},
-  {curso:"MATERIAIS",doacoes:0,alunos:134},
-  {curso:"ELÉTRICA", doacoes:0,alunos:408},
-  {curso:"HÍDRICA",  doacoes:0,alunos:61},
-  {curso:"MINAS",    doacoes:0,alunos:85},
-  {curso:"MECÂNICA", doacoes:0,alunos:655},
-  {curso:"METAL",    doacoes:0,alunos:151},
-  {curso:"AACA",     doacoes:0,alunos:999},
-].map(x=>({...x, ratio: x.doacoes/x.alunos})).sort((a,b)=>b.ratio-a.ratio);
-
-const itemSummary = (() => {
-  const map: Record<string, {qtd:number,pts:number,cursos:{curso:string,qtd:number,pts:number}[]}> = {};
-  fisica.forEach(c => c.doacoes.forEach(d => {
-    if (!map[d.item]) map[d.item] = {qtd:0,pts:0,cursos:[]};
-    map[d.item].qtd += d.qtd;
-    map[d.item].pts += d.pts;
-    map[d.item].cursos.push({curso:c.curso,qtd:d.qtd,pts:d.pts});
-  }));
-  return Object.entries(map).sort((a,b)=>b[1].pts-a[1].pts).map(([item,v])=>({item,...v}));
-})();
-
-const totalItens = fisica.reduce((s,c)=>s+c.itens,0);
-const totalPts   = fisica.reduce((s,c)=>s+c.pontos,0);
-
-const allCursos = [...new Set([...dinheiro,...fisica,...sangue].map(x=>x.curso))];
-function getRatio(list,curso){ return list.find(x=>x.curso===curso)?.ratio ?? 0; }
-const ranking = allCursos.map(curso=>{
-  const rd=getRatio(dinheiro,curso), rf=getRatio(fisica,curso), rs=getRatio(sangue,curso);
-  return {curso,rd,rf,rs,total: rd*1 + rf*2 + rs*3};
-}).sort((a,b)=> b.total!==a.total ? b.total-a.total : (b.rs*3)-(a.rs*3));
-
-const finalWithPts = ranking.map((row,i)=>({...row, ptsGerais: row.total===0 ? 0 : (TABLE_15[i+1]||1) }));
-
-const medal = ["🥇","🥈","🥉"];
-const tabs  = ["🏆 Final","💰 Dinheiro","📦 Física","🩸 Sangue","📊 Resumo Itens"];
-
-const cc = "px-1.5 py-2 sm:px-2 sm:py-2.5 text-center";
-const cl = "px-1.5 py-2 sm:px-2 sm:py-2.5 text-left";
-
-function podiumBg(i: number, isZero = false): string {
-  if (isZero) return "bg-white";
-  return ["bg-row-gold", "bg-row-silver", "bg-row-bronze"][i] ?? "bg-white";
-}
-
-function SimpleTable({data,title,subtitle,colorClass}: {data: any[],title: string,subtitle: string,colorClass: string}){
-  return (
-    <div>
-      <div className="mb-3">
-        <h2 className={`m-0 text-base sm:text-lg ${colorClass}`}>{title}</h2>
-        <div className="text-xs sm:text-[13px] text-gray-500 mt-0.5">{subtitle}</div>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[500px] border-collapse text-xs sm:text-sm">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className={`${cc} w-9`}>#</th>
-              <th className={cl}>Curso</th>
-              <th className={`${cc} text-gray-500`}>Alunos</th>
-              <th className={`${cc} text-gray-500`}>Arrecadado</th>
-              <th className={cc}>R$/aluno</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row,i)=>(
-              <tr key={row.curso} className={`border-b border-gray-100 ${podiumBg(i, row.ratio===0)}`}>
-                <td className={`${cc} ${row.ratio===0?"text-gray-300":""}`}>{row.ratio===0?"—":medal[i]||`${i+1}º`}</td>
-                <td className={`${cl} ${row.ratio===0?"text-gray-300":i<3?"font-bold":""}`}>{row.curso}</td>
-                <td className={`${cc} text-gray-500`}>{row.alunos}</td>
-                <td className={`${cc} ${row.valor===0?"text-gray-300":"text-gray-700"}`}>
-                  {row.valor===0?"—":`R$ ${row.valor.toFixed(2)}`}
-                </td>
-                <td className={`${cc} ${row.ratio===0?"text-gray-300":"text-gray-800"}`}>
-                  {row.ratio===0?"—":row.ratio.toFixed(3)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-function FisicaTable(){
-  const [expanded, setExpanded] = useState<string | null>(null);
-  const toggle = (curso) => setExpanded(prev => prev===curso ? null : curso);
-
-  const rows = [];
-  fisica.forEach((row,i) => {
-    const isExp = expanded === row.curso;
-    rows.push(
-      <tr key={row.curso}
-        onClick={()=>row.doacoes.length>0&&toggle(row.curso)}
-        className={`${isExp?"":"border-b border-gray-100"} ${podiumBg(i)} ${row.doacoes.length?"cursor-pointer":"cursor-default"}`}>
-        <td className={cc}>{medal[i]||`${i+1}º`}</td>
-        <td className={`${cl} ${i<3?"font-bold":""}`}>
-          {row.doacoes.length>0
-            ? <span>{row.curso} <span className="text-[11px] text-gray-400">{isExp?"▲":"▼"}</span></span>
-            : row.curso}
-        </td>
-        <td className={`${cc} text-gray-500`}>{row.alunos}</td>
-        <td className={`${cc} ${row.itens===0?"text-gray-300":"text-gray-700"}`}>{row.itens||"—"}</td>
-        <td className={`${cc} ${row.pontos===0?"text-gray-300":"text-gray-700"}`}>{row.pontos||"—"}</td>
-        <td className={`${cc} ${row.ratio===0?"text-gray-300":"text-gray-800"}`}>{row.ratio===0?"—":row.ratio.toFixed(3)}</td>
-      </tr>
-    );
-    if (isExp && row.doacoes.length>0) {
-      rows.push(
-        <tr key={row.curso+"_det"}>
-          <td colSpan={6} className="px-2 pb-3 pl-10 border-b border-gray-100 bg-gray-50">
-            <table className="w-full text-xs border-collapse">
-              <thead>
-                <tr className="text-gray-500">
-                  <th className="px-2 py-1.5 text-left">Item</th>
-                  <th className="px-2 py-1.5 text-center">Qtd</th>
-                  <th className="px-2 py-1.5 text-center">Pts</th>
-                  <th className="px-2 py-1.5 text-center">Pts/item</th>
-                </tr>
-              </thead>
-              <tbody>
-                {row.doacoes.map((dd,j)=>(
-                  <tr key={j} className="border-t border-gray-200">
-                    <td className="px-2 py-1.5">{dd.item}</td>
-                    <td className="px-2 py-1.5 text-center">{dd.qtd}</td>
-                    <td className="px-2 py-1.5 text-center font-semibold">{dd.pts}</td>
-                    <td className="px-2 py-1.5 text-center text-gray-500">{(dd.pts/dd.qtd).toFixed(1)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </td>
-        </tr>
-      );
-    }
-  });
-
-  return (
-    <div>
-      <div className="mb-3">
-        <h2 className="m-0 text-base sm:text-lg text-emerald-500">Doação Física</h2>
-        <div className="text-xs sm:text-[13px] text-gray-500 mt-0.5">Métrica: pontos de itens ÷ nº de alunos · Peso 2 · clique para ver detalhes</div>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[560px] border-collapse text-xs sm:text-[13px]">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className={`${cc} w-9`}>#</th>
-              <th className={cl}>Curso</th>
-              <th className={`${cc} text-gray-500`}>Alunos</th>
-              <th className={`${cc} text-gray-500`}>Itens</th>
-              <th className={`${cc} text-gray-500`}>Pts itens</th>
-              <th className={cc}>Pts/aluno</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-export default function App(){
+export default function App() {
   const [tab, setTab] = useState(0);
 
   return (
@@ -229,131 +19,24 @@ export default function App(){
       </div>
 
       <div className="flex gap-1 sm:gap-1.5 mb-4 overflow-x-auto sm:flex-wrap">
-        {tabs.map((t,i)=>(
-          <button key={i} onClick={()=>setTab(i)} className={`px-3 py-1.5 rounded-full border-none cursor-pointer text-xs sm:text-[13px] whitespace-nowrap ${
-            tab===i ? "bg-indigo-600 text-white font-bold" : "bg-gray-100 text-gray-700"
-          }`}>{t}</button>
+        {tabs.map((t, i) => (
+          <button
+            key={i}
+            onClick={() => setTab(i)}
+            className={`px-3 py-1.5 rounded-full border-none cursor-pointer text-xs sm:text-[13px] whitespace-nowrap ${
+              tab === i ? "bg-indigo-600 text-white font-bold" : "bg-gray-100 text-gray-700"
+            }`}
+          >
+            {t}
+          </button>
         ))}
       </div>
 
-      {tab===0&&(
-        <div>
-          <div className="mb-3 px-3 py-2.5 bg-amber-50 rounded-lg text-xs sm:text-[13px] text-amber-800 border-l-4 border-amber-500">
-            <strong>Metodologia:</strong> Pontos pela tabela Art. 37 (15 equipes). Pesos: Dinheiro ×1 · Física ×2 · Sangue ×3. Empate desempata por Sangue.
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[560px] border-collapse text-xs sm:text-sm">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className={`${cc} w-9`}>#</th>
-                  <th className={cl}>Curso</th>
-                  <th className={`${cc} text-amber-500`}>💰×1</th>
-                  <th className={`${cc} text-emerald-500`}>📦×2</th>
-                  <th className={`${cc} text-red-500`}>🩸×3</th>
-                  <th className={`${cc} font-bold`}>TOTAL</th>
-                  <th className={`${cc} text-indigo-600`}>Pts Gerais</th>
-                </tr>
-              </thead>
-              <tbody>
-                {finalWithPts.map((row,i)=>(
-                  <tr key={row.curso} className={`border-b border-gray-100 ${podiumBg(i, row.total===0)}`}>
-                    <td className={`${cc} text-base ${row.total===0?"text-gray-300":""}`}>{row.total===0?"—":medal[i]||`${i+1}º`}</td>
-                    <td className={`${cl} ${row.total===0?"text-gray-300":i<3?"font-bold":""}`}>{row.curso}</td>
-                    <td className={`${cc} ${row.rd===0?"text-gray-300":"text-amber-800"}`}>{row.rd===0?"—":(row.rd*1).toFixed(3)}</td>
-                    <td className={`${cc} ${row.rf===0?"text-gray-300":"text-emerald-800"}`}>{row.rf===0?"—":(row.rf*2).toFixed(3)}</td>
-                    <td className={`${cc} ${row.rs===0?"text-gray-300":"text-red-800"}`}>{row.rs===0?"—":(row.rs*3).toFixed(3)}</td>
-                    <td className={`${cc} font-bold text-[15px] ${row.total===0?"text-gray-300":""}`}>{row.total===0?"—":row.total.toFixed(3)}</td>
-                    <td className={`${cc} font-bold ${row.ptsGerais===0?"text-gray-300":"text-indigo-600"}`}>{row.ptsGerais||"—"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {tab===1&&<SimpleTable data={dinheiro} title="Arrecadação de Dinheiro" subtitle="Métrica: R$ arrecadados ÷ nº de alunos · Peso 1" colorClass="text-amber-500"/>}
-      {tab===2&&<FisicaTable/>}
-
-      {tab===3&&(
-        <div>
-          <div className="mb-3">
-            <h2 className="m-0 text-base sm:text-lg text-red-500">Doação de Sangue</h2>
-            <div className="text-xs sm:text-[13px] text-gray-500 mt-0.5">Métrica: nº doações ÷ nº de alunos · Peso 3</div>
-            <div className="mt-2 px-3 py-2 bg-sky-50 rounded-md text-[11px] sm:text-xs text-sky-700">
-              Aceitas doações até 60 dias antes (homens → a partir de 24/jan) e 90 dias (mulheres → a partir de 25/dez)
-            </div>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[500px] border-collapse text-xs sm:text-[13px]">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className={`${cc} w-9`}>#</th>
-                  <th className={cl}>Curso</th>
-                  <th className={`${cc} text-gray-500`}>Alunos</th>
-                  <th className={`${cc} text-gray-500`}>Doações</th>
-                  <th className={cc}>Ratio</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sangue.map((row,i)=>(
-                  <tr key={row.curso} className={`border-b border-gray-100 ${podiumBg(i)}`}>
-                    <td className={cc}>{medal[i]||`${i+1}º`}</td>
-                    <td className={`${cl} ${i<3?"font-bold":""}`}>{row.curso}</td>
-                    <td className={`${cc} text-gray-500`}>{row.alunos}</td>
-                    <td className={`${cc} ${row.doacoes===0?"text-gray-300":"text-gray-700"}`}>{row.doacoes||"—"}</td>
-                    <td className={`${cc} ${row.ratio===0?"text-gray-300":"text-gray-800"}`}>{row.ratio===0?"—":row.ratio.toFixed(3)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {tab===4&&(
-        <div>
-          <div className="mb-4 flex flex-col sm:flex-row gap-3">
-            {[
-              {label:"Total de itens",val:totalItens,textClass:"text-emerald-500",borderClass:"border-emerald-500"},
-              {label:"Total de pontos",val:totalPts,textClass:"text-amber-500",borderClass:"border-amber-500"},
-              {label:"Cursos participantes",val:fisica.filter(c=>c.itens>0).length,textClass:"text-indigo-600",borderClass:"border-indigo-600"},
-            ].map((st,i)=>(
-              <div key={i} className={`flex-1 min-w-[140px] bg-gray-50 rounded-lg px-4 py-3.5 border-t-[3px] ${st.borderClass}`}>
-                <div className="text-[11px] text-gray-500 mb-1">{st.label}</div>
-                <div className={`text-2xl font-bold ${st.textClass}`}>{st.val}</div>
-              </div>
-            ))}
-          </div>
-          <h3 className="text-sm sm:text-[15px] mb-2 text-gray-700">Por tipo de item</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[480px] border-collapse text-xs sm:text-[13px]">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className={cl}>Item</th>
-                  <th className={cc}>Qtd total</th>
-                  <th className={cc}>Pts total</th>
-                  <th className={cc}>Pts/unid</th>
-                  <th className={cl}>Quem doou</th>
-                </tr>
-              </thead>
-              <tbody>
-                {itemSummary.map((row,i)=>(
-                  <tr key={i} className="border-b border-gray-100">
-                    <td className={`${cl} font-semibold`}>{row.item}</td>
-                    <td className={cc}>{row.qtd}</td>
-                    <td className={`${cc} font-bold text-emerald-500`}>{row.pts}</td>
-                    <td className={`${cc} text-gray-500`}>{(row.pts/row.qtd).toFixed(1)}</td>
-                    <td className={`${cl} text-xs text-gray-500`}>
-                      {row.cursos.map(c=>`${c.curso} (${c.qtd})`).join(" · ")}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      {tab === 0 && <FinalTable />}
+      {tab === 1 && <DinheiroTable />}
+      {tab === 2 && <FisicaTable />}
+      {tab === 3 && <SangueTable />}
+      {tab === 4 && <ResumoItens />}
     </div>
   );
 }

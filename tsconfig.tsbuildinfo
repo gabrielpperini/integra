@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx"],"version":"5.9.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/dinheirotable.tsx","./src/components/finaltable.tsx","./src/components/fisicatable.tsx","./src/components/resumoitens.tsx","./src/components/sanguetable.tsx","./src/components/shared.ts","./src/data/computed.ts","./src/data/raw.ts"],"version":"5.9.3"}
