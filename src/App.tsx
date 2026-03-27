@@ -101,41 +101,51 @@ const finalWithPts = ranking.map((row,i)=>({...row, ptsGerais: row.total===0 ? 0
 const medal = ["🥇","🥈","🥉"];
 const tabs  = ["🏆 Final","💰 Dinheiro","📦 Física","🩸 Sangue","📊 Resumo Itens"];
 
-function SimpleTable({data,title,subtitle,color}: {data: any[],title: string,subtitle: string,color: string}){
+const cc = "px-1.5 py-2 sm:px-2 sm:py-2.5 text-center";
+const cl = "px-1.5 py-2 sm:px-2 sm:py-2.5 text-left";
+
+function podiumBg(i: number, isZero = false): string {
+  if (isZero) return "bg-white";
+  return ["bg-row-gold", "bg-row-silver", "bg-row-bronze"][i] ?? "bg-white";
+}
+
+function SimpleTable({data,title,subtitle,colorClass}: {data: any[],title: string,subtitle: string,colorClass: string}){
   return (
     <div>
-      <div style={{marginBottom:12}}>
-        <h2 style={{margin:0,fontSize:17,color}}>{title}</h2>
-        <div style={{fontSize:13,color:"#666",marginTop:2}}>{subtitle}</div>
+      <div className="mb-3">
+        <h2 className={`m-0 text-base sm:text-lg ${colorClass}`}>{title}</h2>
+        <div className="text-xs sm:text-[13px] text-gray-500 mt-0.5">{subtitle}</div>
       </div>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:14}}>
-        <thead>
-          <tr style={{background:"#f8f9fa"}}>
-            <th style={{padding:"10px 8px",textAlign:"center",width:40}}>#</th>
-            <th style={{padding:"10px 8px",textAlign:"left"}}>Curso</th>
-            <th style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>Alunos</th>
-            <th style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>Arrecadado</th>
-            <th style={{padding:"10px 8px",textAlign:"center"}}>R$/aluno</th>
-            <th style={{padding:"10px 8px",textAlign:"center"}}>Pts tabela</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row,i)=>(
-            <tr key={row.curso} style={{borderBottom:"1px solid #eee",background:i<3?["#fffdf0","#f0f4ff","#f5f5f5"][i]:"white"}}>
-              <td style={{padding:"10px 8px",textAlign:"center"}}>{medal[i]||`${i+1}º`}</td>
-              <td style={{padding:"10px 8px",fontWeight:i<3?700:400}}>{row.curso}</td>
-              <td style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>{row.alunos}</td>
-              <td style={{padding:"10px 8px",textAlign:"center",color:row.valor===0?"#ccc":"#374151"}}>
-                {row.valor===0?"—":`R$ ${row.valor.toFixed(2)}`}
-              </td>
-              <td style={{padding:"10px 8px",textAlign:"center",color:row.ratio===0?"#ccc":"#333"}}>
-                {row.ratio===0?"—":row.ratio.toFixed(3)}
-              </td>
-              <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:row.pts===0?"#ccc":color}}>{row.pts||"—"}</td>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-xs sm:text-sm">
+          <thead>
+            <tr className="bg-gray-50">
+              <th className={`${cc} w-9`}>#</th>
+              <th className={cl}>Curso</th>
+              <th className={`${cc} text-gray-500`}>Alunos</th>
+              <th className={`${cc} text-gray-500`}>Arrecadado</th>
+              <th className={cc}>R$/aluno</th>
+              <th className={cc}>Pts tabela</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((row,i)=>(
+              <tr key={row.curso} className={`border-b border-gray-100 ${podiumBg(i)}`}>
+                <td className={cc}>{medal[i]||`${i+1}º`}</td>
+                <td className={`${cl} ${i<3?"font-bold":""}`}>{row.curso}</td>
+                <td className={`${cc} text-gray-500`}>{row.alunos}</td>
+                <td className={`${cc} ${row.valor===0?"text-gray-300":"text-gray-700"}`}>
+                  {row.valor===0?"—":`R$ ${row.valor.toFixed(2)}`}
+                </td>
+                <td className={`${cc} ${row.ratio===0?"text-gray-300":"text-gray-800"}`}>
+                  {row.ratio===0?"—":row.ratio.toFixed(3)}
+                </td>
+                <td className={`${cc} font-bold ${row.pts===0?"text-gray-300":colorClass}`}>{row.pts||"—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -147,44 +157,43 @@ function FisicaTable(){
   const rows = [];
   f.forEach((row,i) => {
     const isExp = expanded === row.curso;
-    const bgColor = i<3 ? ["#fffdf0","#f0f4ff","#f5f5f5"][i] : "white";
     rows.push(
       <tr key={row.curso}
         onClick={()=>row.doacoes.length>0&&toggle(row.curso)}
-        style={{borderBottom:isExp?"none":"1px solid #eee",background:bgColor,cursor:row.doacoes.length?"pointer":"default"}}>
-        <td style={{padding:"10px 8px",textAlign:"center"}}>{medal[i]||`${i+1}º`}</td>
-        <td style={{padding:"10px 8px",fontWeight:i<3?700:400}}>
+        className={`${isExp?"":"border-b border-gray-100"} ${podiumBg(i)} ${row.doacoes.length?"cursor-pointer":"cursor-default"}`}>
+        <td className={cc}>{medal[i]||`${i+1}º`}</td>
+        <td className={`${cl} ${i<3?"font-bold":""}`}>
           {row.doacoes.length>0
-            ? <span>{row.curso} <span style={{fontSize:11,color:"#9ca3af"}}>{isExp?"▲":"▼"}</span></span>
+            ? <span>{row.curso} <span className="text-[11px] text-gray-400">{isExp?"▲":"▼"}</span></span>
             : row.curso}
         </td>
-        <td style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>{row.alunos}</td>
-        <td style={{padding:"10px 8px",textAlign:"center",color:row.itens===0?"#ccc":"#374151"}}>{row.itens||"—"}</td>
-        <td style={{padding:"10px 8px",textAlign:"center",color:row.pontos===0?"#ccc":"#374151"}}>{row.pontos||"—"}</td>
-        <td style={{padding:"10px 8px",textAlign:"center",color:row.ratio===0?"#ccc":"#333"}}>{row.ratio===0?"—":row.ratio.toFixed(3)}</td>
-        <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:row.pts===0?"#ccc":"#10b981"}}>{row.pts||"—"}</td>
+        <td className={`${cc} text-gray-500`}>{row.alunos}</td>
+        <td className={`${cc} ${row.itens===0?"text-gray-300":"text-gray-700"}`}>{row.itens||"—"}</td>
+        <td className={`${cc} ${row.pontos===0?"text-gray-300":"text-gray-700"}`}>{row.pontos||"—"}</td>
+        <td className={`${cc} ${row.ratio===0?"text-gray-300":"text-gray-800"}`}>{row.ratio===0?"—":row.ratio.toFixed(3)}</td>
+        <td className={`${cc} font-bold ${row.pts===0?"text-gray-300":"text-emerald-500"}`}>{row.pts||"—"}</td>
       </tr>
     );
     if (isExp && row.doacoes.length>0) {
       rows.push(
         <tr key={row.curso+"_det"}>
-          <td colSpan={7} style={{padding:"0 8px 12px 40px",borderBottom:"1px solid #eee",background:"#f9fafb"}}>
-            <table style={{width:"100%",fontSize:12,borderCollapse:"collapse"}}>
+          <td colSpan={7} className="px-2 pb-3 pl-10 border-b border-gray-100 bg-gray-50">
+            <table className="w-full text-xs border-collapse">
               <thead>
-                <tr style={{color:"#6b7280"}}>
-                  <th style={{padding:"6px 8px",textAlign:"left"}}>Item</th>
-                  <th style={{padding:"6px 8px",textAlign:"center"}}>Qtd</th>
-                  <th style={{padding:"6px 8px",textAlign:"center"}}>Pts</th>
-                  <th style={{padding:"6px 8px",textAlign:"center"}}>Pts/item</th>
+                <tr className="text-gray-500">
+                  <th className="px-2 py-1.5 text-left">Item</th>
+                  <th className="px-2 py-1.5 text-center">Qtd</th>
+                  <th className="px-2 py-1.5 text-center">Pts</th>
+                  <th className="px-2 py-1.5 text-center">Pts/item</th>
                 </tr>
               </thead>
               <tbody>
                 {row.doacoes.map((dd,j)=>(
-                  <tr key={j} style={{borderTop:"1px solid #e5e7eb"}}>
-                    <td style={{padding:"6px 8px"}}>{dd.item}</td>
-                    <td style={{padding:"6px 8px",textAlign:"center"}}>{dd.qtd}</td>
-                    <td style={{padding:"6px 8px",textAlign:"center",fontWeight:600}}>{dd.pts}</td>
-                    <td style={{padding:"6px 8px",textAlign:"center",color:"#6b7280"}}>{(dd.pts/dd.qtd).toFixed(1)}</td>
+                  <tr key={j} className="border-t border-gray-200">
+                    <td className="px-2 py-1.5">{dd.item}</td>
+                    <td className="px-2 py-1.5 text-center">{dd.qtd}</td>
+                    <td className="px-2 py-1.5 text-center font-semibold">{dd.pts}</td>
+                    <td className="px-2 py-1.5 text-center text-gray-500">{(dd.pts/dd.qtd).toFixed(1)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -197,24 +206,26 @@ function FisicaTable(){
 
   return (
     <div>
-      <div style={{marginBottom:12}}>
-        <h2 style={{margin:0,fontSize:17,color:"#10b981"}}>Doação Física</h2>
-        <div style={{fontSize:13,color:"#666",marginTop:2}}>Métrica: pontos de itens ÷ nº de alunos · Peso 2 · clique para ver detalhes</div>
+      <div className="mb-3">
+        <h2 className="m-0 text-base sm:text-lg text-emerald-500">Doação Física</h2>
+        <div className="text-xs sm:text-[13px] text-gray-500 mt-0.5">Métrica: pontos de itens ÷ nº de alunos · Peso 2 · clique para ver detalhes</div>
       </div>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
-        <thead>
-          <tr style={{background:"#f8f9fa"}}>
-            <th style={{padding:"10px 8px",textAlign:"center",width:36}}>#</th>
-            <th style={{padding:"10px 8px",textAlign:"left"}}>Curso</th>
-            <th style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>Alunos</th>
-            <th style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>Itens</th>
-            <th style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>Pts itens</th>
-            <th style={{padding:"10px 8px",textAlign:"center"}}>Pts/aluno</th>
-            <th style={{padding:"10px 8px",textAlign:"center",color:"#10b981"}}>Pts tabela</th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </table>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-xs sm:text-[13px]">
+          <thead>
+            <tr className="bg-gray-50">
+              <th className={`${cc} w-9`}>#</th>
+              <th className={cl}>Curso</th>
+              <th className={`${cc} text-gray-500`}>Alunos</th>
+              <th className={`${cc} text-gray-500`}>Itens</th>
+              <th className={`${cc} text-gray-500`}>Pts itens</th>
+              <th className={cc}>Pts/aluno</th>
+              <th className={`${cc} text-emerald-500`}>Pts tabela</th>
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -223,135 +234,139 @@ export default function App(){
   const [tab, setTab] = useState(0);
 
   return (
-    <div style={{fontFamily:"sans-serif",maxWidth:720,margin:"0 auto",padding:16}}>
-      <div style={{background:"linear-gradient(135deg,#1a1a2e,#16213e)",borderRadius:12,padding:"20px 24px",marginBottom:20,color:"white"}}>
-        <div style={{fontSize:11,letterSpacing:2,color:"#aaa",marginBottom:4}}>RELATÓRIO OFICIAL</div>
-        <h1 style={{margin:0,fontSize:22}}>Integra Solidário 2026</h1>
-        <div style={{fontSize:13,color:"#88aaff",marginTop:4}}>15 equipes · 3 provas · pontuação ponderada</div>
+    <div className="font-sans max-w-[720px] mx-auto p-3 sm:p-4">
+      <div className="bg-gradient-to-br from-header-from to-header-to rounded-lg sm:rounded-xl px-4 py-4 sm:px-6 sm:py-5 mb-5 text-white">
+        <div className="text-[11px] tracking-[2px] text-gray-400 mb-1">RELATÓRIO OFICIAL</div>
+        <h1 className="m-0 text-lg sm:text-xl">Integra Solidário 2026</h1>
+        <div className="text-xs sm:text-[13px] text-header-accent mt-1">15 equipes · 3 provas · pontuação ponderada</div>
       </div>
 
-      <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
+      <div className="flex gap-1 sm:gap-1.5 mb-4 overflow-x-auto sm:flex-wrap">
         {tabs.map((t,i)=>(
-          <button key={i} onClick={()=>setTab(i)} style={{
-            padding:"7px 13px",borderRadius:20,border:"none",cursor:"pointer",fontSize:13,
-            background:tab===i?"#4f46e5":"#f0f0f0",color:tab===i?"white":"#333",
-            fontWeight:tab===i?700:400
-          }}>{t}</button>
+          <button key={i} onClick={()=>setTab(i)} className={`px-3 py-1.5 rounded-full border-none cursor-pointer text-xs sm:text-[13px] whitespace-nowrap ${
+            tab===i ? "bg-indigo-600 text-white font-bold" : "bg-gray-100 text-gray-700"
+          }`}>{t}</button>
         ))}
       </div>
 
       {tab===0&&(
         <div>
-          <div style={{marginBottom:12,padding:"10px 14px",background:"#fffbeb",borderRadius:8,fontSize:13,color:"#92400e",borderLeft:"4px solid #f59e0b"}}>
+          <div className="mb-3 px-3 py-2.5 bg-amber-50 rounded-lg text-xs sm:text-[13px] text-amber-800 border-l-4 border-amber-500">
             <strong>Metodologia:</strong> Pontos pela tabela Art. 37 (15 equipes). Pesos: Dinheiro ×1 · Física ×2 · Sangue ×3. Empate desempata por Sangue.
           </div>
-          <table style={{width:"100%",borderCollapse:"collapse",fontSize:14}}>
-            <thead>
-              <tr style={{background:"#f8f9fa"}}>
-                <th style={{padding:"10px 8px",textAlign:"center",width:40}}>#</th>
-                <th style={{padding:"10px 8px",textAlign:"left"}}>Curso</th>
-                <th style={{padding:"10px 8px",textAlign:"center",color:"#f59e0b"}}>💰×1</th>
-                <th style={{padding:"10px 8px",textAlign:"center",color:"#10b981"}}>📦×2</th>
-                <th style={{padding:"10px 8px",textAlign:"center",color:"#ef4444"}}>🩸×3</th>
-                <th style={{padding:"10px 8px",textAlign:"center",fontWeight:700}}>TOTAL</th>
-                <th style={{padding:"10px 8px",textAlign:"center",color:"#4f46e5"}}>Pts Gerais</th>
-              </tr>
-            </thead>
-            <tbody>
-              {finalWithPts.map((row,i)=>(
-                <tr key={row.curso} style={{borderBottom:"1px solid #eee",background:row.total===0?"white":i<3?["#fffdf0","#f0f4ff","#f5f5f5"][i]:"white"}}>
-                  <td style={{padding:"10px 8px",textAlign:"center",fontSize:16,color:row.total===0?"#ccc":undefined}}>{row.total===0?"—":medal[i]||`${i+1}º`}</td>
-                  <td style={{padding:"10px 8px",fontWeight:row.total===0?400:i<3?700:400,color:row.total===0?"#ccc":undefined}}>{row.curso}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",color:row.pd===0?"#ccc":"#92400e"}}>{row.pd||"—"}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",color:row.pf===0?"#ccc":"#065f46"}}>{row.pf===0?"—":row.pf*2}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",color:row.ps===0?"#ccc":"#991b1b"}}>{row.ps===0?"—":row.ps*3}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,fontSize:15,color:row.total===0?"#ccc":undefined}}>{row.total||"—"}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:row.ptsGerais===0?"#ccc":"#4f46e5"}}>{row.ptsGerais||"—"}</td>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className={`${cc} w-9`}>#</th>
+                  <th className={cl}>Curso</th>
+                  <th className={`${cc} text-amber-500`}>💰×1</th>
+                  <th className={`${cc} text-emerald-500`}>📦×2</th>
+                  <th className={`${cc} text-red-500`}>🩸×3</th>
+                  <th className={`${cc} font-bold`}>TOTAL</th>
+                  <th className={`${cc} text-indigo-600`}>Pts Gerais</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {finalWithPts.map((row,i)=>(
+                  <tr key={row.curso} className={`border-b border-gray-100 ${podiumBg(i, row.total===0)}`}>
+                    <td className={`${cc} text-base ${row.total===0?"text-gray-300":""}`}>{row.total===0?"—":medal[i]||`${i+1}º`}</td>
+                    <td className={`${cl} ${row.total===0?"text-gray-300":i<3?"font-bold":""}`}>{row.curso}</td>
+                    <td className={`${cc} ${row.pd===0?"text-gray-300":"text-amber-800"}`}>{row.pd||"—"}</td>
+                    <td className={`${cc} ${row.pf===0?"text-gray-300":"text-emerald-800"}`}>{row.pf===0?"—":row.pf*2}</td>
+                    <td className={`${cc} ${row.ps===0?"text-gray-300":"text-red-800"}`}>{row.ps===0?"—":row.ps*3}</td>
+                    <td className={`${cc} font-bold text-[15px] ${row.total===0?"text-gray-300":""}`}>{row.total||"—"}</td>
+                    <td className={`${cc} font-bold ${row.ptsGerais===0?"text-gray-300":"text-indigo-600"}`}>{row.ptsGerais||"—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
-      {tab===1&&<SimpleTable data={d} title="Arrecadação de Dinheiro" subtitle="Métrica: R$ arrecadados ÷ nº de alunos · Peso 1" color="#f59e0b"/>}
+      {tab===1&&<SimpleTable data={d} title="Arrecadação de Dinheiro" subtitle="Métrica: R$ arrecadados ÷ nº de alunos · Peso 1" colorClass="text-amber-500"/>}
       {tab===2&&<FisicaTable/>}
 
       {tab===3&&(
         <div>
-          <div style={{marginBottom:12}}>
-            <h2 style={{margin:0,fontSize:17,color:"#ef4444"}}>Doação de Sangue</h2>
-            <div style={{fontSize:13,color:"#666",marginTop:2}}>Métrica: nº doações ÷ nº de alunos · Peso 3</div>
-            <div style={{marginTop:8,padding:"8px 12px",background:"#f0f9ff",borderRadius:6,fontSize:12,color:"#0369a1"}}>
+          <div className="mb-3">
+            <h2 className="m-0 text-base sm:text-lg text-red-500">Doação de Sangue</h2>
+            <div className="text-xs sm:text-[13px] text-gray-500 mt-0.5">Métrica: nº doações ÷ nº de alunos · Peso 3</div>
+            <div className="mt-2 px-3 py-2 bg-sky-50 rounded-md text-[11px] sm:text-xs text-sky-700">
               Aceitas doações até 60 dias antes (homens → a partir de 24/jan) e 90 dias (mulheres → a partir de 25/dez)
             </div>
           </div>
-          <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
-            <thead>
-              <tr style={{background:"#f8f9fa"}}>
-                <th style={{padding:"10px 8px",textAlign:"center",width:36}}>#</th>
-                <th style={{padding:"10px 8px",textAlign:"left"}}>Curso</th>
-                <th style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>Alunos</th>
-                <th style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>Doações</th>
-                <th style={{padding:"10px 8px",textAlign:"center"}}>Ratio</th>
-                <th style={{padding:"10px 8px",textAlign:"center",color:"#ef4444"}}>Pts tabela</th>
-              </tr>
-            </thead>
-            <tbody>
-              {s.map((row,i)=>(
-                <tr key={row.curso} style={{borderBottom:"1px solid #eee",background:i<3?["#fffdf0","#f0f4ff","#f5f5f5"][i]:"white"}}>
-                  <td style={{padding:"10px 8px",textAlign:"center"}}>{medal[i]||`${i+1}º`}</td>
-                  <td style={{padding:"10px 8px",fontWeight:i<3?700:400}}>{row.curso}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>{row.alunos}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",color:row.doacoes===0?"#ccc":"#374151"}}>{row.doacoes||"—"}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",color:row.ratio===0?"#ccc":"#333"}}>{row.ratio===0?"—":row.ratio.toFixed(3)}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:row.pts===0?"#ccc":"#ef4444"}}>{row.pts||"—"}</td>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-xs sm:text-[13px]">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className={`${cc} w-9`}>#</th>
+                  <th className={cl}>Curso</th>
+                  <th className={`${cc} text-gray-500`}>Alunos</th>
+                  <th className={`${cc} text-gray-500`}>Doações</th>
+                  <th className={cc}>Ratio</th>
+                  <th className={`${cc} text-red-500`}>Pts tabela</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {s.map((row,i)=>(
+                  <tr key={row.curso} className={`border-b border-gray-100 ${podiumBg(i)}`}>
+                    <td className={cc}>{medal[i]||`${i+1}º`}</td>
+                    <td className={`${cl} ${i<3?"font-bold":""}`}>{row.curso}</td>
+                    <td className={`${cc} text-gray-500`}>{row.alunos}</td>
+                    <td className={`${cc} ${row.doacoes===0?"text-gray-300":"text-gray-700"}`}>{row.doacoes||"—"}</td>
+                    <td className={`${cc} ${row.ratio===0?"text-gray-300":"text-gray-800"}`}>{row.ratio===0?"—":row.ratio.toFixed(3)}</td>
+                    <td className={`${cc} font-bold ${row.pts===0?"text-gray-300":"text-red-500"}`}>{row.pts||"—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {tab===4&&(
         <div>
-          <div style={{marginBottom:16,display:"flex",gap:12,flexWrap:"wrap"}}>
+          <div className="mb-4 flex flex-col sm:flex-row gap-3">
             {[
-              {label:"Total de itens",val:totalItens,color:"#10b981"},
-              {label:"Total de pontos",val:totalPts,color:"#f59e0b"},
-              {label:"Cursos participantes",val:fisica.filter(c=>c.itens>0).length,color:"#4f46e5"},
+              {label:"Total de itens",val:totalItens,textClass:"text-emerald-500",borderClass:"border-emerald-500"},
+              {label:"Total de pontos",val:totalPts,textClass:"text-amber-500",borderClass:"border-amber-500"},
+              {label:"Cursos participantes",val:fisica.filter(c=>c.itens>0).length,textClass:"text-indigo-600",borderClass:"border-indigo-600"},
             ].map((st,i)=>(
-              <div key={i} style={{flex:1,minWidth:140,background:"#f9fafb",borderRadius:10,padding:"14px 16px",borderTop:`3px solid ${st.color}`}}>
-                <div style={{fontSize:11,color:"#6b7280",marginBottom:4}}>{st.label}</div>
-                <div style={{fontSize:24,fontWeight:700,color:st.color}}>{st.val}</div>
+              <div key={i} className={`flex-1 min-w-[140px] bg-gray-50 rounded-lg px-4 py-3.5 border-t-[3px] ${st.borderClass}`}>
+                <div className="text-[11px] text-gray-500 mb-1">{st.label}</div>
+                <div className={`text-2xl font-bold ${st.textClass}`}>{st.val}</div>
               </div>
             ))}
           </div>
-          <h3 style={{fontSize:15,marginBottom:8,color:"#374151"}}>Por tipo de item</h3>
-          <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
-            <thead>
-              <tr style={{background:"#f8f9fa"}}>
-                <th style={{padding:"10px 8px",textAlign:"left"}}>Item</th>
-                <th style={{padding:"10px 8px",textAlign:"center"}}>Qtd total</th>
-                <th style={{padding:"10px 8px",textAlign:"center"}}>Pts total</th>
-                <th style={{padding:"10px 8px",textAlign:"center"}}>Pts/unid</th>
-                <th style={{padding:"10px 8px",textAlign:"left"}}>Quem doou</th>
-              </tr>
-            </thead>
-            <tbody>
-              {itemSummary.map((row,i)=>(
-                <tr key={i} style={{borderBottom:"1px solid #eee"}}>
-                  <td style={{padding:"10px 8px",fontWeight:600}}>{row.item}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center"}}>{row.qtd}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",fontWeight:700,color:row.pts===0?"#ccc":"#10b981"}}>{row.pts||"—"}</td>
-                  <td style={{padding:"10px 8px",textAlign:"center",color:"#6b7280"}}>{(row.pts/row.qtd).toFixed(1)}</td>
-                  <td style={{padding:"10px 8px",fontSize:12,color:"#6b7280"}}>
-                    {row.cursos.map(c=>`${c.curso} (${c.qtd})`).join(" · ")}
-                  </td>
+          <h3 className="text-sm sm:text-[15px] mb-2 text-gray-700">Por tipo de item</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-xs sm:text-[13px]">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className={cl}>Item</th>
+                  <th className={cc}>Qtd total</th>
+                  <th className={cc}>Pts total</th>
+                  <th className={cc}>Pts/unid</th>
+                  <th className={cl}>Quem doou</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {itemSummary.map((row,i)=>(
+                  <tr key={i} className="border-b border-gray-100">
+                    <td className={`${cl} font-semibold`}>{row.item}</td>
+                    <td className={cc}>{row.qtd}</td>
+                    <td className={`${cc} font-bold text-emerald-500`}>{row.pts}</td>
+                    <td className={`${cc} text-gray-500`}>{(row.pts/row.qtd).toFixed(1)}</td>
+                    <td className={`${cl} text-xs text-gray-500`}>
+                      {row.cursos.map(c=>`${c.curso} (${c.qtd})`).join(" · ")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

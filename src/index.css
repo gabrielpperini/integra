@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+  --color-header-from: #1a1a2e;
+  --color-header-to: #16213e;
+  --color-header-accent: #88aaff;
+  --color-row-gold: #fffdf0;
+  --color-row-silver: #f0f4ff;
+  --color-row-bronze: #f5f5f5;
+}
