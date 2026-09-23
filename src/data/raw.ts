@@ -1,65 +1,56 @@
-export const TABLE_15: Record<number, number> = {
-  1: 20, 2: 17, 3: 15, 4: 14, 5: 12, 6: 11, 7: 10, 8: 9,
-  9: 7, 10: 6, 11: 5, 12: 4, 13: 3, 14: 2, 15: 1,
+export const TABLE_16: Record<number, number> = {
+  1: 21, 2: 18, 3: 16, 4: 15, 5: 13, 6: 12, 7: 11, 8:10,
+  9: 8, 10: 7, 11: 6, 12: 5, 13: 4, 14: 3, 15: 2, 16: 1
 };
 
 export const cursos = [
-  { id: "prod", nome: "PRODUÇÃO", alunos: 424 },
-  { id: "ambica", nome: "AMBICA", alunos: 346 },
-  { id: "quimica", nome: "QUÍMICA", alunos: 623 },
-  { id: "alergia", nome: "ALERGIA", alunos: 318 },
-  { id: "automacao", nome: "AUTOMAÇÃO", alunos: 211 },
-  { id: "a3fad", nome: "A3FAD", alunos: 1207 },
-  { id: "civil", nome: "CIVIL", alunos: 877 },
+  { id: "prod", nome: "PRODUÇÃO", alunos: 447 },
+  { id: "ambiental", nome: "AMBIENTAL", alunos: 187 },
+  { id: "quimica", nome: "QUÍMICA", alunos: 641 },
+  { id: "alimentos", nome: "ALIMENTOS", alunos: 176 },
+  { id: "energia", nome: "ENERGIA", alunos: 179 },
+  { id: "automacao", nome: "AUTOMAÇÃO", alunos: 220 },
+  { id: "fisica", nome: "FÍSICA", alunos: 167 },
+  { id: "a3fad", nome: "A3FAD", alunos: 1237 },
+  { id: "civil", nome: "CIVIL", alunos: 939 },
   { id: "aapi", nome: "AAPI", alunos: 2553 },
-  { id: "materiais", nome: "MATERIAIS", alunos: 134 },
-  { id: "eletrica", nome: "ELÉTRICA", alunos: 408 },
-  { id: "hidrica", nome: "HÍDRICA", alunos: 61 },
-  { id: "minas", nome: "MINAS", alunos: 85 },
-  { id: "mecanica", nome: "MECÂNICA", alunos: 655 },
-  { id: "metal", nome: "METAL", alunos: 151 },
-  { id: "aaca", nome: "AACA", alunos: 999 },
+  { id: "materiais", nome: "MATERIAIS", alunos: 141 },
+  { id: "eletrica", nome: "ELÉTRICA", alunos: 455 },
+  { id: "hidrica", nome: "HÍDRICA", alunos: 73 },
+  { id: "minas", nome: "MINAS", alunos: 90 },
+  { id: "mecanica", nome: "MECÂNICA", alunos: 697 },
+  { id: "metal", nome: "METAL", alunos: 169 },
 ] as const;
 
 export type CursoId = (typeof cursos)[number]["id"];
 
 export const itens = [
-  { id: "racao1", nome: "Ração 1 kg", pts: 3 },
-  { id: "racao3", nome: "Ração 3 kg", pts: 9 },
-  { id: "racao10", nome: "Ração 10 kg", pts: 23 },
-  { id: "racao15", nome: "Ração 15 kg", pts: 28 },
-  { id: "racao20", nome: "Ração 20+ kg", pts: 55 },
-  { id: "sache", nome: "Sachê ração", pts: 1 },
-  { id: "vermifugo10", nome: "Vermífugo até 10 kg", pts: 4 },
-  { id: "vermifugo10p", nome: "Vermífugo acima 10 kg", pts: 6 },
-  { id: "antipulga10", nome: "Antipulgas até 10 kg", pts: 20 },
-  { id: "antipulga10p", nome: "Antipulgas acima 10 kg", pts: 25 },
+  { id: "shampoo", nome: "Shampoo (ml)", pts: 0.1 },
+  { id: "condicionador", nome: "Condicionador (ml)", pts: 0.1 },
+  { id: "desodorante", nome: "Desodorante (ml)", pts: 0.1 },
+  { id: "hidratante", nome: "Hidratante (ml)", pts: 0.1 },
+  { id: "barbeador", nome: "Aparelho de barbear", pts: 10 },
+  { id: "fraldaG", nome: "Fralda geriátrica G", pts: 12 },
+  { id: "fraldaXG", nome: "Fralda geriátrica XG", pts: 12 },
 ] as const;
 
 export type ItemId = (typeof itens)[number]["id"];
 
 export const rawDinheiro: { id: CursoId; valor: number }[] = [
-  { id: "ambica", valor: 600 },
-  { id: "quimica", valor: 600 },
-  { id: "automacao", valor: 85 },
-  { id: "prod", valor: 3 },
+  { id: "ambiental", valor: 50 },
+  { id: "alimentos", valor: 10 + 15 + 5 },
 ];
 
 export const rawFisica: { id: CursoId; doacoes: { item: ItemId; qtd: number }[] }[] = [
-  { id: "prod", doacoes: [{ item: "racao20", qtd: 18 }, { item: "racao1", qtd: 1 }] },
-  { id: "ambica", doacoes: [{ item: "racao20", qtd: 2 }, { item: "sache", qtd: 63 }] },
-  { id: "quimica", doacoes: [{ item: "sache", qtd: 90 }, { item: "racao15", qtd: 1 }, { item: "racao10", qtd: 1 }] },
-  { id: "alergia", doacoes: [{ item: "racao20", qtd: 1 }, { item: "racao1", qtd: 1 }] },
-  { id: "automacao", doacoes: [{ item: "sache", qtd: 34 }] },
-  { id: "a3fad", doacoes: [{ item: "sache", qtd: 75 }] },
+  { id: "alimentos", doacoes: [{ item: "condicionador", qtd: 1000 }, { item: "barbeador", qtd: 240 }] },
+  { id: "prod", doacoes: [{ item: "shampoo", qtd: 300 }, { item: "condicionador", qtd: 470 }, { item: "hidratante", qtd: 400 }, { item: "barbeador", qtd: 140 }, { item: "fraldaG", qtd: 960 }] },
+  { id: "mecanica", doacoes: [{ item: "shampoo", qtd: 5025 }, { item: "condicionador", qtd: 1330 }, { item: "desodorante", qtd: 1700 }, { item: "hidratante", qtd: 4400 }, { item: "barbeador", qtd: 30 }, { item: "fraldaXG", qtd: 39 }] },
+  { id: "quimica", doacoes: [{ item: "shampoo", qtd: 25200 }, { item: "barbeador", qtd: 330 }] },
 ];
 
 export const rawSangue: { id: CursoId; doacoes: number }[] = [
-  { id: "prod", doacoes: 65 },
-  { id: "automacao", doacoes: 5 },
-  { id: "ambica", doacoes: 6 },
-  { id: "quimica", doacoes: 8 },
-  { id: "a3fad", doacoes: 9 },
-  { id: "civil", doacoes: 6 },
-  { id: "alergia", doacoes: 2 },
+  { id: "mecanica", doacoes: 9 },
+  { id: "ambiental", doacoes: 3 },
+  { id: "alimentos", doacoes: 7 },
+  { id: "prod", doacoes: 13 },
 ];

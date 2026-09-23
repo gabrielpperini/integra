@@ -1,4 +1,4 @@
-import { TABLE_15, cursos, itens, rawDinheiro, rawFisica, rawSangue } from "./raw";
+import { TABLE_16, cursos, itens, rawDinheiro, rawFisica, rawSangue } from "./raw";
 
 function getItemPts(itemId: string) {
   return itens.find(i => i.id === itemId)?.pts ?? 0;
@@ -64,5 +64,5 @@ const ranking = cursos
 
 export const finalWithPts = ranking.map((row, i) => ({
   ...row,
-  ptsGerais: row.total === 0 ? 0 : TABLE_15[i + 1] || 1,
+  ptsGerais: row.total === 0 ? 0 : TABLE_16[i + 1] || 1,
 }));
